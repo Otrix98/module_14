@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">module_14</string>
+    <string name="text">Список пуст</string>
+    <string name="buttonText">Получить локацию</string>
+</resources>
