@@ -7,6 +7,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -61,7 +62,7 @@ class MainFragment: Fragment (R.layout.fragment_main) {
         super.onActivityCreated(savedInstanceState)
         button.setOnClickListener {
             getCurrentLocationWithPermissionCheck()
-            addFood()
+            addMap()
         }
         isTextVisiable()
         initList()
@@ -165,13 +166,11 @@ class MainFragment: Fragment (R.layout.fragment_main) {
         }
     }
 
+
     private fun initList() {
         MapAdapter = MapAdapter { position ->
             val positionTime = MapAdapter?.items?.get(position)?.time
-            initTimePicker(positionTime)
-            currentMap[position].time = selectedInstant ?: Instant.now()
-            MapAdapter?.items = (currentMap)
-
+            initTimePicker(positionTime, position)
         }
         with(maplist) {
             adapter = MapAdapter
@@ -181,7 +180,7 @@ class MainFragment: Fragment (R.layout.fragment_main) {
         }
     }
 
-    private fun initTimePicker(time: Instant?) {
+    private fun initTimePicker(time: Instant?, position: Int) {
         val currentDateTime = LocalDateTime.ofInstant(time, ZoneId.systemDefault())
 
         DatePickerDialog(
@@ -190,9 +189,20 @@ class MainFragment: Fragment (R.layout.fragment_main) {
                 TimePickerDialog(
                     requireContext(),
                     {_, hourOfDay, minute ->
+
+//                        fun updateTime(position: Int){
+//                            currentMap[position].time = (selectedInstant ?: Instant.now())
+//                            MapAdapter?.items = (currentMap)
+//
+//                    }
                         val zonedDateTime = LocalDateTime.of(year, month + 1, dayOfMonth, hourOfDay, minute)
                             .atZone(ZoneId.systemDefault())
+
                         selectedInstant = zonedDateTime.toInstant()
+
+
+                        updateTime(position)
+
 
                     },
                     currentDateTime.hour,
@@ -207,15 +217,20 @@ class MainFragment: Fragment (R.layout.fragment_main) {
             .show()
     }
 
+    fun updateTime(position: Int) {
+        currentMap[position].time = (selectedInstant ?: Instant.now())
+        MapAdapter?.items = (currentMap)
+    }
 
-    private fun deleteFood( position: Int) {
+
+    private fun deleteMap( position: Int) {
 
         currentMap = currentMap.filterIndexed { index, food -> index != position }
         MapAdapter?.items = (currentMap)
         isTextVisiable()
     }
 
-    private fun addFood() {
+    private fun addMap() {
         selectedInstant = null
         updateCurrentItem()
 
