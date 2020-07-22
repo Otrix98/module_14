@@ -34,19 +34,21 @@ class MainFragment: Fragment (R.layout.fragment_main) {
         "https://i.pinimg.com/originals/06/96/59/0696597cc9e3e31cdef0b65cd7a727bd.jpg"
     )
 
-    fun updateCurrentItem() {
-        currentItem = Map (
-            id = Random.nextLong(),
-            avatarLink = avatarLinks.random(),
-            map = "",
-            time = selectedInstant ?: Instant.now()
-        )
-    }
+//    fun updateCurrentItem() {
+//        currentItem = Map (
+//            id = Random.nextLong(),
+//            avatarLink = avatarLinks.random(),
+//            map = "",
+//            time = selectedInstant ?: Instant.now()
+//        )
+//    }
+
+//var currentCoordinates: String = "coord"
 
     var currentItem = Map (
         id = Random.nextLong(),
         avatarLink = avatarLinks.random(),
-        map = "",
+        map = "currentCoord",
         time = Instant.now()
     )
 
@@ -60,8 +62,10 @@ class MainFragment: Fragment (R.layout.fragment_main) {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        showLocationInfo()
         button.setOnClickListener {
             getCurrentLocationWithPermissionCheck()
+            showLocationInfo()
             addMap()
         }
         isTextVisiable()
@@ -220,6 +224,7 @@ class MainFragment: Fragment (R.layout.fragment_main) {
     fun updateTime(position: Int) {
         currentMap[position].time = (selectedInstant ?: Instant.now())
         MapAdapter?.items = (currentMap)
+        MapAdapter?.notifyDataSetChanged()
     }
 
 
@@ -232,8 +237,6 @@ class MainFragment: Fragment (R.layout.fragment_main) {
 
     private fun addMap() {
         selectedInstant = null
-        updateCurrentItem()
-
         val newMap = currentItem.let {
             it.copy(id = Random.nextLong())
         }
@@ -241,8 +244,6 @@ class MainFragment: Fragment (R.layout.fragment_main) {
         MapAdapter?.items = (currentMap)
         isTextVisiable()
         maplist.scrollToPosition(0)
-        showLocationInfo()
-        updateCurrentItem()
     }
 
 }
